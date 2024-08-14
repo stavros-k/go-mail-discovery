@@ -54,7 +54,6 @@ func getProviderFromMX(domain string) (providers.Server, error) {
 		return providers.Server{}, err
 	}
 	for _, mxRecord := range mxRecords {
-		log.Printf("mx record: %s\n", mxRecord.Host)
 		switch {
 		case strings.HasSuffix(mxRecord.Host, ".zoho.eu."):
 			return providers.Zoho(), nil

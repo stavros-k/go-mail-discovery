@@ -49,8 +49,19 @@ func ListProviders() []string {
 func ListProvidersWithInfo() []string {
 	providersMutex.RLock()
 	defer providersMutex.RUnlock()
+	providerInfos := make([]string, 0, len(providers))
 	for _, provider := range providers {
-		fmt.Printf("%s\n", provider)
+		providerInfos = append(providerInfos, provider.String())
 	}
-	return nil
+	return providerInfos
+}
+
+func GetProviderInfo(id string) (string, error) {
+	providersMutex.RLock()
+	defer providersMutex.RUnlock()
+	provider, ok := providers[id]
+	if !ok {
+		return "", fmt.Errorf("provider not found: %s", id)
+	}
+	return provider.String(), nil
 }

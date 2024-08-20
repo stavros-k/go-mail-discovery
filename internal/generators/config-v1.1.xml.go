@@ -51,6 +51,14 @@ func (c *ClientConfig) Bytes() ([]byte, error) {
 	return xml.MarshalIndent(c, "", "  ")
 }
 
+func (c *ClientConfig) String() string {
+	b, err := c.Bytes()
+	if err != nil {
+		return fmt.Sprintf("Error generating config: %v", err)
+	}
+	return string(b)
+}
+
 func NewConfigV1_1(p ConfigV1_1Params) (*ClientConfig, error) {
 	if p.Provider.ID == "" {
 		return nil, fmt.Errorf("invalid provider: ID is empty")

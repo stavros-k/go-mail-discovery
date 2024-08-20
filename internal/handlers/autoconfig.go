@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/stavros-k/go-mail-discovery/internal/generators"
+	"github.com/stavros-k/go-mail-discovery/internal/utils"
 )
 
 func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,13 +16,13 @@ func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain, err := getDomainFromRequest(r)
+	domain, err := getDomain(emailAddress, r)
 	if err != nil {
-		handleError(w, http.StatusBadRequest, fmt.Errorf("error getting domain from request: %w", err))
+		handleError(w, http.StatusBadRequest, fmt.Errorf("error getting domain: %w", err))
 		return
 	}
 
-	provider, err := getProviderFromMX(domain)
+	provider, err := utils.GetProviderFromMX(domain)
 	if err != nil {
 		handleError(w, http.StatusBadRequest, fmt.Errorf("error getting provider from MX: %w", err))
 		return

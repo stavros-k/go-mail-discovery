@@ -8,13 +8,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/stavros-k/go-mail-discovery/internal/providers"
+	"github.com/stavros-k/go-mail-discovery/internal/utils"
 	"golang.org/x/net/publicsuffix"
 )
 
 var (
 	ErrInvalidEmail = errors.New("invalid email address")
-	ErrNoProvider   = errors.New("no provider found")
 )
 
 func handleError(w http.ResponseWriter, status int, err error) {
@@ -34,12 +33,11 @@ func getEmailFromQuery(r *http.Request) (string, error) {
 }
 
 func getDomainFromRequest(r *http.Request) (string, error) {
-	// TODO: Remove this line when ready for production
-	r.Host = "escapegameover.be:8080"
-
 	host, _, err := net.SplitHostPort(r.Host)
 	if err != nil {
-		// TODO: Test this, and see if we can use error.Is
+		if strings.Contains(host, ":") {
+			return "", fmt.Errorf("error splitting host and port: %w", err)
+		}
 		// If SplitHostPort fails, it might be because there's no port
 		// In this case, use the whole Host
 		host = r.Host
@@ -53,19 +51,9 @@ func getDomainFromRequest(r *http.Request) (string, error) {
 	return domain, nil
 }
 
-func getProviderFromMX(domain string) (providers.Provider, error) {
-	mxRecords, err := net.LookupMX(domain)
-	if err != nil {
-		return providers.Provider{}, fmt.Errorf("error looking up MX records: %w", err)
+func getDomain(emailAddress string, r *http.Request) (string, error) {
+	if emailAddress != "" && emailAddress != "%EMAILADDRESS%" {
+		return utils.GetDomainFromEmailAddress(emailAddress)
 	}
-
-	for _, mxRecord := range mxRecords {
-		switch {
-		case strings.HasSuffix(mxRecord.Host, ".zoho.eu."):
-			return providers.GetProvider("zoho,eu")
-			// Add more cases here for other providers
-		}
-	}
-
-	return providers.Provider{}, ErrNoProvider
+	return getDomainFromRequest(r)
 }

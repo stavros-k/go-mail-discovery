@@ -2,6 +2,7 @@ package generators
 
 import (
 	"encoding/xml"
+	"fmt"
 
 	"github.com/stavros-k/go-mail-discovery/internal/providers"
 )
@@ -39,52 +40,36 @@ type OutgoingServer struct {
 	UseGlobalPreferredServer bool   `xml:"useGlobalPreferredServer"`
 }
 
-type Config_v1_1_xml_params struct {
-	Domain              string
-	DisplayName         string
-	Username            string
-	SmtpGlobalPreferred bool
-	Provider            providers.Provider
-}
-
-func socketType(t providers.SocketType) string {
-	switch t {
-	case providers.PlainSocketType:
-		return "plain"
-	case providers.SSLSocketType:
-		return "SSL"
-	case providers.StartTLSSocketType:
-		return "STARTTLS"
-	}
-	return "SSL"
-
+type ConfigV1_1Params struct {
+	Domain      string
+	DisplayName string
+	Username    string
+	Provider    providers.Provider
 }
 
 func (c *ClientConfig) Bytes() ([]byte, error) {
-	return xml.MarshalIndent(c, "", "\t")
+	return xml.MarshalIndent(c, "", "  ")
 }
 
-func NewConfig_v1_1_xml(p Config_v1_1_xml_params) *ClientConfig {
+func NewConfigV1_1(p ConfigV1_1Params) (*ClientConfig, error) {
+	if p.Provider.ID == "" {
+		return nil, fmt.Errorf("invalid provider: ID is empty")
+	}
+
 	incServers := []IncomingServer{}
 	if p.Provider.ImapServer != nil {
-		incServers = append(incServers, IncomingServer{
-			Type:           "imap",
-			Username:       p.Username,
-			Hostname:       p.Provider.ImapServer.Hostname,
-			Port:           p.Provider.ImapServer.Port,
-			SocketType:     socketType(p.Provider.ImapServer.SocketType),
-			Authentication: p.Provider.ImapServer.Authentication,
-		})
+		incServers = append(incServers, createIncomingServer("imap", p.Username, p.Provider.ImapServer))
 	}
 	if p.Provider.Pop3Server != nil {
-		incServers = append(incServers, IncomingServer{
-			Type:           "pop3",
-			Username:       p.Username,
-			Hostname:       p.Provider.Pop3Server.Hostname,
-			Port:           p.Provider.Pop3Server.Port,
-			SocketType:     socketType(p.Provider.Pop3Server.SocketType),
-			Authentication: p.Provider.Pop3Server.Authentication,
-		})
+		incServers = append(incServers, createIncomingServer("pop3", p.Username, p.Provider.Pop3Server))
+	}
+
+	if len(incServers) == 0 {
+		return nil, fmt.Errorf("no incoming servers configured for provider %s", p.Provider.ID)
+	}
+
+	if p.Provider.SmtpServer == nil {
+		return nil, fmt.Errorf("no SMTP server configured for provider %s", p.Provider.ID)
 	}
 
 	return &ClientConfig{
@@ -94,15 +79,30 @@ func NewConfig_v1_1_xml(p Config_v1_1_xml_params) *ClientConfig {
 			Domain:          p.Domain,
 			DisplayName:     p.DisplayName,
 			IncomingServers: incServers,
-			OutgoingServer: OutgoingServer{
-				Type:                     "smtp",
-				Username:                 p.Username,
-				Hostname:                 p.Provider.SmtpServer.Hostname,
-				Port:                     p.Provider.SmtpServer.Port,
-				SocketType:               socketType(p.Provider.SmtpServer.SocketType),
-				Authentication:           p.Provider.SmtpServer.Authentication,
-				UseGlobalPreferredServer: p.Provider.SmtpServer.UseGlobalPreferredServer,
-			},
+			OutgoingServer:  createOutgoingServer(p.Username, p.Provider.SmtpServer),
 		},
+	}, nil
+}
+
+func createIncomingServer(serverType string, username string, config *providers.IncomingServerConfig) IncomingServer {
+	return IncomingServer{
+		Type:           serverType,
+		Username:       username,
+		Hostname:       config.Hostname,
+		Port:           config.Port,
+		SocketType:     config.SocketType.String(),
+		Authentication: config.Authentication,
+	}
+}
+
+func createOutgoingServer(username string, config *providers.OutgoingServerConfig) OutgoingServer {
+	return OutgoingServer{
+		Type:                     "smtp",
+		Username:                 username,
+		Hostname:                 config.Hostname,
+		Port:                     config.Port,
+		SocketType:               config.SocketType.String(),
+		Authentication:           config.Authentication,
+		UseGlobalPreferredServer: config.UseGlobalPreferredServer,
 	}
 }

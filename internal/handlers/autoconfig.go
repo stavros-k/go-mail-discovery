@@ -27,12 +27,16 @@ func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := generators.NewConfig_v1_1_xml(generators.Config_v1_1_xml_params{
+	config, err := generators.NewConfigV1_1(generators.ConfigV1_1Params{
 		Domain:      domain,
 		DisplayName: emailAddress,
 		Username:    emailAddress,
 		Provider:    provider,
 	})
+	if err != nil {
+		handleError(w, http.StatusInternalServerError, fmt.Errorf("error generating config: %w", err))
+		return
+	}
 
 	data, err := config.Bytes()
 	if err != nil {

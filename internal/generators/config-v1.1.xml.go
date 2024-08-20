@@ -2,7 +2,6 @@ package generators
 
 import (
 	"encoding/xml"
-	"log"
 
 	"github.com/stavros-k/go-mail-discovery/internal/providers"
 )
@@ -45,19 +44,17 @@ type Config_v1_1_xml_params struct {
 	DisplayName         string
 	Username            string
 	SmtpGlobalPreferred bool
-	Provider            providers.Server
+	Provider            providers.Provider
 }
 
-func socketType(t string) string {
+func socketType(t providers.SocketType) string {
 	switch t {
-	case "":
+	case providers.PlainSocketType:
 		return "plain"
-	case "ssl":
+	case providers.SSLSocketType:
 		return "SSL"
-	case "starttls":
+	case providers.StartTLSSocketType:
 		return "STARTTLS"
-	default:
-		log.Printf("unknown socket type: %s\n", t)
 	}
 	return "SSL"
 

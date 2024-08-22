@@ -20,5 +20,6 @@ func main() {
 	// r.Post("/autodiscover/autodiscover.xml", autodiscoverHandler)
 	// r.Post("/Autodiscover/Autodiscover.xml", autodiscoverHandler)
 
+	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	mobileConfigTemplateName = "mobileconfig"
+	mobileConfigTemplateName = "mobileConfig"
 	appleMailAppID           = "com.apple.mail.managed"
 )
 

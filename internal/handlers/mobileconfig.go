@@ -29,9 +29,9 @@ func MobileConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	config, err := generators.NewMobileConfig(generators.MobileConfigParams{
-		Domain:      "stavrosk.me",
-		DisplayName: "stavros@stavrosk.me",
-		Username:    "stavros@stavrosk.me",
+		Domain:      domain,
+		DisplayName: emailAddress,
+		Username:    emailAddress,
 		Provider:    provider,
 	})
 	if err != nil {
@@ -44,7 +44,9 @@ func MobileConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/xml")
+	w.Header().Set("Content-Type", "application/x-apple-aspen-config")
+	// return a downloadable file with name "autoconfig.mobileconfig"
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.mobileconfig", emailAddress))
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(data); err != nil {
 		log.Printf("error writing response: %v", err)

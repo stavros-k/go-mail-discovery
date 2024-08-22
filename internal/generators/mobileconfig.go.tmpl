@@ -21,9 +21,11 @@
 				<key>IncomingMailServerPortNumber</key>
 				<integer>{{ .IMAPServer.Port }}</integer>
 				<key>IncomingMailServerUseSSL</key>
-				<{{ isSocketSSL .IMAPServer.SocketType }}/>
+				<{{ isSocketSSL .IMAPServer.SocketType }} />
 				<key>IncomingMailServerUsername</key>
 				<string>{{ .Username }}</string>
+				<key>IncomingPassword</key>
+				<string></string>
 				<key>OutgoingMailServerAuthentication</key>
 				<string>EmailAuthPassword</string>
 				<key>OutgoingMailServerHostName</key>
@@ -31,31 +33,39 @@
 				<key>OutgoingMailServerPortNumber</key>
 				<integer>{{ .SMTPServer.Port }}</integer>
 				<key>OutgoingMailServerUseSSL</key>
-				<{{ isSocketSSL .SMTPServer.SocketType }}/>
+				<{{ isSocketSSL .SMTPServer.SocketType }} />
 				<key>OutgoingMailServerUsername</key>
 				<string>{{ .Username }}</string>
 				<key>OutgoingPasswordSameAsIncomingPassword</key>
-				<true/>
+				<true />
 				<key>PayloadDescription</key>
 				<string>{{ .PayloadDescription }}</string>
 				<key>PayloadDisplayName</key>
 				<string>{{ .DisplayName }}</string>
 				<key>PayloadIdentifier</key>
 				<string>{{ .PayloadIdentifier }}</string>
+				<key>PayloadOrganization</key>
+				<string>{{ .Domain }}</string>
 				<key>PayloadType</key>
 				<string>{{ .AppleMailAppID }}</string>
 				<key>PayloadUUID</key>
-				<string>{{ .UUID }}</string>
+				<string>{{ uuid }}</string>
 				<key>PayloadVersion</key>
-				<real>1</real>
-				<key>SMIMEEnablePerMessageSwitch</key>
-				<false/>
+				<integer>1</integer>
+				<key>PreventAppSheet</key>
+				<false />
+				<key>PreventMove</key>
+				<false />
 				<key>SMIMEEnabled</key>
-				<false/>
+				<false />
+				<key>allowMailDrop</key>
+				<true />
+				<key>SMIMEEnablePerMessageSwitch</key>
+				<false />
 				<key>SMIMESigningEnabled</key>
-				<false/>
+				<false />
 				<key>disableMailRecentsSyncing</key>
-				<false/>
+				<false />
 			</dict>
 		</array>
 		<key>PayloadDescription</key>
@@ -65,13 +75,13 @@
 		<key>PayloadIdentifier</key>
 		<string>{{ .PayloadIdentifier }}</string>
 		<key>PayloadOrganization</key>
-		<string>{{ .ProviderID }}</string>
+		<string>{{ .Domain }}</string>
 		<key>PayloadRemovalDisallowed</key>
-		<false/>
+		<false />
 		<key>PayloadType</key>
 		<string>Configuration</string>
 		<key>PayloadUUID</key>
-		<string>{{ .UUID }}</string>
+		<string>{{ uuid }}</string>
 		<key>PayloadVersion</key>
 		<integer>1</integer>
 	</dict>

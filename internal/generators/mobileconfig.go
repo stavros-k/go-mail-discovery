@@ -31,6 +31,7 @@ func init() {
 	parsedTemplates, err := template.New(mobileConfigTemplateName).
 		Funcs(template.FuncMap{
 			"isSocketSSL": isSocketSSL,
+			"uuid":        uuid.NewString,
 		}).
 		ParseFS(templateFiles, "mobileconfig.go.tmpl")
 	if err != nil {
@@ -66,6 +67,7 @@ func (m *MobileConfig) Bytes() ([]byte, error) {
 	var b bytes.Buffer
 	if err := t.ExecuteTemplate(&b, mobileConfigDefinitionName, map[string]any{
 		"AppleMailAppID":     appleMailAppID,
+		"Domain":             m.p.Domain,
 		"UUID":               m.uuid,
 		"PayloadDescription": m.payloadDescription,
 		"PayloadIdentifier":  m.payloadIdentifier,
@@ -108,13 +110,11 @@ func NewMobileConfig(p MobileConfigParams) (*MobileConfig, error) {
 		return nil, fmt.Errorf("no SMTP server configured for provider %s", p.Provider.ID)
 	}
 
-	uuid := uuid.NewString()
-	payloadIdentifier := fmt.Sprintf("%s.autoconfig.%s", p.Provider.ID, uuid)
+	payloadIdentifier := fmt.Sprintf("%s.mobileconfig", p.Domain)
 	payloadDescription := fmt.Sprintf("Email account configuration for [%s]", p.DisplayName)
 
 	return &MobileConfig{
 		p:                  p,
-		uuid:               uuid,
 		payloadDescription: payloadDescription,
 		payloadIdentifier:  payloadIdentifier,
 	}, nil

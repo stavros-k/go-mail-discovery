@@ -18,7 +18,7 @@ func zohoConfig() Provider {
 		SmtpServer: &OutgoingServerConfig{
 			Hostname:                 "smtppro.zoho.eu",
 			Port:                     587,
-			SocketType:               StartTLSSocketType,
+			SocketType:               SSLSocketType,
 			Authentication:           "password-cleartext",
 			UseGlobalPreferredServer: false,
 		},

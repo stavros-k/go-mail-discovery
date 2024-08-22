@@ -1,3 +1,4 @@
+{{/* https://mosen.github.io/profiledocs/payloads/email.html#com.apple.mail.managed-disableMailRecentsSyncing-auto */}}
 {{- define "mobileConfig" -}}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -52,6 +53,7 @@
 				<string>{{ uuid }}</string>
 				<key>PayloadVersion</key>
 				<integer>1</integer>
+				{{- /* Options */}}
 				<key>PreventAppSheet</key>
 				<false />
 				<key>PreventMove</key>

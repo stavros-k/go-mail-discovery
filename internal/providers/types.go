@@ -17,11 +17,11 @@ const (
 func (st SocketType) String() string {
 	switch st {
 	case PlainSocketType:
-		return "Plain"
+		return "PLAIN"
 	case SSLSocketType:
 		return "SSL"
 	case StartTLSSocketType:
-		return "StartTLS"
+		return "STARTTLS"
 	default:
 		return fmt.Sprintf("Unknown SocketType(%d)", int(st))
 	}

@@ -21,10 +21,13 @@ func handleError(w http.ResponseWriter, status int, err error) {
 	http.Error(w, err.Error(), status)
 }
 
-func getEmailFromQuery(r *http.Request) (string, error) {
-	emailAddress := r.URL.Query().Get("emailaddress")
+func getEmailFromQuery(r *http.Request, queryKey string, usePlaceholder bool) (string, error) {
+	emailAddress := r.URL.Query().Get(queryKey)
 	if emailAddress == "" {
-		return "%EMAILADDRESS%", nil
+		if usePlaceholder {
+			return "%EMAILADDRESS%", nil
+		}
+		return "", ErrInvalidEmail
 	}
 	if !strings.Contains(emailAddress, "@") {
 		return "", ErrInvalidEmail

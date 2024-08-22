@@ -9,8 +9,8 @@ import (
 	"github.com/stavros-k/go-mail-discovery/internal/utils"
 )
 
-func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
-	emailAddress, err := getEmailFromQuery(r, "emailaddress", true)
+func MobileConfigHandler(w http.ResponseWriter, r *http.Request) {
+	emailAddress, err := getEmailFromQuery(r, "email", false)
 	if err != nil {
 		handleError(w, http.StatusBadRequest, fmt.Errorf("error getting email from query: %w", err))
 		return
@@ -28,10 +28,10 @@ func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config, err := generators.NewConfigV1_1(generators.ConfigV1_1Params{
-		Domain:      domain,
-		DisplayName: emailAddress,
-		Username:    emailAddress,
+	config, err := generators.NewMobileConfig(generators.MobileConfigParams{
+		Domain:      "stavrosk.me",
+		DisplayName: "stavros@stavrosk.me",
+		Username:    "stavros@stavrosk.me",
 		Provider:    provider,
 	})
 	if err != nil {

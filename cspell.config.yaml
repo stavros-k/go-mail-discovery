@@ -4,5 +4,7 @@ words:
   - emailaddress
   - Hostinger
   - Imap
+  - mobileconfig
   - publicsuffix
   - starttls
+  - tmpl

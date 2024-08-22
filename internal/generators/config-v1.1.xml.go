@@ -48,7 +48,11 @@ type ConfigV1_1Params struct {
 }
 
 func (c *ClientConfig) Bytes() ([]byte, error) {
-	return xml.MarshalIndent(c, "", "  ")
+	b, err := xml.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling config: %w", err)
+	}
+	return append([]byte(xml.Header), b...), nil
 }
 
 func (c *ClientConfig) String() string {

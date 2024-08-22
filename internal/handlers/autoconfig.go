@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"encoding/xml"
 	"fmt"
 	"log"
 	"net/http"
@@ -38,16 +40,18 @@ func AutoconfigHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusInternalServerError, fmt.Errorf("error generating config: %w", err))
 		return
 	}
-
-	data, err := config.Bytes()
+	data := &bytes.Buffer{}
+	data.WriteString(xml.Header)
+	configBytes, err := config.Bytes()
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, fmt.Errorf("error generating config: %w", err))
 		return
 	}
+	data.Write(configBytes)
 
 	w.Header().Set("Content-Type", "application/xml")
 	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(data); err != nil {
+	if _, err := w.Write(data.Bytes()); err != nil {
 		log.Printf("error writing response: %v", err)
 	}
 }

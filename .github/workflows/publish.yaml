@@ -1,0 +1,48 @@
+name: Publish Docker image
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  hadolint:
+    name: Run hadolint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: hadolint
+        uses: reviewdog/action-hadolint@2d90b15b2b969e507fc2a31af6e29ca19a0f9516 # v1.45.0
+        continue-on-error: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          filter_mode: diff_context
+          fail_on_error: true
+
+  build:
+    permissions:
+      packages: write
+      contents: read
+    name: Build
+    runs-on: ubuntu-22.04
+    needs:
+      - hadolint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Log in to the Container registry
+        id: login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: stavros-k
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images\
+        if: steps.login.outputs.success == 'true'
+        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
+        with:
+          push: true
+          tags: ghcr.io/stavros-k/go-mail-discovery:latest

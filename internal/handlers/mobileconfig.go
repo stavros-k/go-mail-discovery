@@ -22,7 +22,8 @@ func MobileConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	provider, err := utils.GetProviderFromMX(domain)
+	cache := r.URL.Query().Get("cache") != "false"
+	provider, err := utils.GetProviderFromMX(domain, cache)
 	if err != nil {
 		handleError(w, http.StatusBadRequest, fmt.Errorf("error getting provider from MX: %w", err))
 		return

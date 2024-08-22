@@ -18,7 +18,7 @@ var autoconfigCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		provider, err := utils.GetProviderFromMX(domain)
+		provider, err := utils.GetProviderFromMX(domain, false)
 		if err != nil {
 			log.Fatal(err)
 		}

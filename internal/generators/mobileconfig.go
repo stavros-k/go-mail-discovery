@@ -12,19 +12,22 @@ import (
 	"github.com/stavros-k/go-mail-discovery/internal/providers"
 )
 
-const templateName = "mobileconfig"
+const (
+	mobileConfigTemplateName = "mobileconfig"
+	appleMailAppID           = "com.apple.mail.managed"
+)
 
-var templates map[string]*template.Template
-var mutex sync.Mutex
+var (
+	templates map[string]*template.Template
+	mutex     sync.RWMutex
+)
 
 //go:embed mobileconfig.go.tmpl
 var templateFiles embed.FS
 
 func init() {
-	mutex.Lock()
-	defer mutex.Unlock()
-	templates = make(map[string]*template.Template)
-	parsedTemplates, err := template.New(templateName).
+	// Parse templates on startup
+	parsedTemplates, err := template.New(mobileConfigTemplateName).
 		Funcs(template.FuncMap{
 			"isSocketSSL": isSocketSSL,
 		}).
@@ -33,8 +36,11 @@ func init() {
 		log.Fatalf("error parsing templates: %v", err)
 	}
 
-	templates[templateName] = parsedTemplates
-	fmt.Println(templates[templateName])
+	// Store the parsed templates in the map
+	mutex.Lock()
+	defer mutex.Unlock()
+	templates = make(map[string]*template.Template)
+	templates[mobileConfigTemplateName] = parsedTemplates
 }
 
 type MobileConfig struct {
@@ -49,14 +55,15 @@ func isSocketSSL(st providers.SocketType) bool {
 }
 
 func (m *MobileConfig) Bytes() ([]byte, error) {
-	mutex.Lock()
-	t, ok := templates[templateName]
+	mutex.RLock()
+	t, ok := templates[mobileConfigTemplateName]
+	mutex.RUnlock()
 	if !ok {
 		return nil, fmt.Errorf("no template found for provider %s", m.p.Provider.ID)
 	}
-	mutex.Unlock()
+
 	var b bytes.Buffer
-	if err := t.ExecuteTemplate(&b, templateName, map[string]any{
+	if err := t.ExecuteTemplate(&b, mobileConfigTemplateName, map[string]any{
 		"AppleMailAppID":     appleMailAppID,
 		"UUID":               m.uuid,
 		"PayloadDescription": m.payloadDescription,
@@ -86,8 +93,6 @@ type MobileConfigParams struct {
 	Username    string
 	Provider    providers.Provider
 }
-
-const appleMailAppID = "com.apple.mail.managed"
 
 func NewMobileConfig(p MobileConfigParams) (*MobileConfig, error) {
 	if p.Provider.ID == "" {

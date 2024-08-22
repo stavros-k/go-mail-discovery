@@ -22,7 +22,7 @@
 				<key>IncomingMailServerPortNumber</key>
 				<integer>{{ .IMAPServer.Port }}</integer>
 				<key>IncomingMailServerUseSSL</key>
-				<{{ isSocketSSL .IMAPServer.SocketType }} />
+				<{{ isSocketSSLorStartTLS .IMAPServer.SocketType }} />
 				<key>IncomingMailServerUsername</key>
 				<string>{{ .Username }}</string>
 				<key>IncomingPassword</key>
@@ -34,7 +34,7 @@
 				<key>OutgoingMailServerPortNumber</key>
 				<integer>{{ .SMTPServer.Port }}</integer>
 				<key>OutgoingMailServerUseSSL</key>
-				<{{ isSocketSSL .SMTPServer.SocketType }} />
+				<{{ isSocketSSLorStartTLS .SMTPServer.SocketType }} />
 				<key>OutgoingMailServerUsername</key>
 				<string>{{ .Username }}</string>
 				<key>OutgoingPasswordSameAsIncomingPassword</key>

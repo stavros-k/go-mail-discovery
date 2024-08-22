@@ -30,8 +30,8 @@ func init() {
 	// Parse templates on startup
 	parsedTemplates, err := template.New(mobileConfigTemplateName).
 		Funcs(template.FuncMap{
-			"isSocketSSL": isSocketSSL,
-			"uuid":        uuid.NewString,
+			"isSocketSSLorStartTLS": isSocketSSLorStartTLS,
+			"uuid":                  uuid.NewString,
 		}).
 		ParseFS(templateFiles, "mobileconfig.go.tmpl")
 	if err != nil {
@@ -52,8 +52,8 @@ type MobileConfig struct {
 	payloadIdentifier  string
 }
 
-func isSocketSSL(st providers.SocketType) bool {
-	return st == providers.SSLSocketType
+func isSocketSSLorStartTLS(st providers.SocketType) bool {
+	return st == providers.SSLSocketType || st == providers.StartTLSSocketType
 }
 
 func (m *MobileConfig) Bytes() ([]byte, error) {

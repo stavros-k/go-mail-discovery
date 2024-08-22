@@ -17,7 +17,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/mail/config-v1.1.xml", handlers.AutoconfigHandler)
-	r.Get("/test", handlers.MobileConfigHandler)
+	r.Get("/email.mobileconfig", handlers.MobileConfigHandler)
 	// r.Post("/autodiscover/autodiscover.xml", autodiscoverHandler)
 	// r.Post("/Autodiscover/Autodiscover.xml", autodiscoverHandler)
 

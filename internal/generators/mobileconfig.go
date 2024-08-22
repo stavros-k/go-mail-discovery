@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	mobileConfigTemplateName = "mobileConfig"
-	appleMailAppID           = "com.apple.mail.managed"
+	mobileConfigTemplateName   = "mobileConfigTemplate"
+	mobileConfigDefinitionName = "mobileConfig"
+	appleMailAppID             = "com.apple.mail.managed"
 )
 
 var (
@@ -63,7 +64,7 @@ func (m *MobileConfig) Bytes() ([]byte, error) {
 	}
 
 	var b bytes.Buffer
-	if err := t.ExecuteTemplate(&b, mobileConfigTemplateName, map[string]any{
+	if err := t.ExecuteTemplate(&b, mobileConfigDefinitionName, map[string]any{
 		"AppleMailAppID":     appleMailAppID,
 		"UUID":               m.uuid,
 		"PayloadDescription": m.payloadDescription,

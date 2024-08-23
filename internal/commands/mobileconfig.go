@@ -9,9 +9,9 @@ import (
 	"github.com/stavros-k/go-mail-discovery/internal/utils"
 )
 
-var autoconfigCmd = &cobra.Command{
-	Use:   "autoconfig",
-	Short: "Generate autoconfig",
+var mobileconfigCmd = &cobra.Command{
+	Use:   "mobileconfig",
+	Short: "Generate mobileconfig",
 	Run: func(cmd *cobra.Command, args []string) {
 		emailAddress := cmd.Flag("email").Value.String()
 		domain, err := utils.GetDomainFromEmailAddress(emailAddress)
@@ -23,7 +23,7 @@ var autoconfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		config, err := generators.NewConfigV1_1(generators.ConfigV1_1Params{
+		config, err := generators.NewMobileConfig(generators.MobileConfigParams{
 			Domain:      domain,
 			DisplayName: emailAddress,
 			Username:    emailAddress,
@@ -38,7 +38,7 @@ var autoconfigCmd = &cobra.Command{
 }
 
 func init() {
-	autoconfigCmd.Flags().StringP("email", "e", "", "Email address")
-	autoconfigCmd.MarkFlagRequired("email")
-	rootCmd.AddCommand(autoconfigCmd)
+	mobileconfigCmd.Flags().StringP("email", "e", "", "Email address")
+	mobileconfigCmd.MarkFlagRequired("email")
+	rootCmd.AddCommand(mobileconfigCmd)
 }

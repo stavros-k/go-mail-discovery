@@ -96,13 +96,26 @@ func NewConfigV1_1(p ConfigV1_1Params) (*ClientConfig, error) {
 	}, nil
 }
 
+func getSocketType(s providers.SocketType) string {
+	switch s {
+	case providers.SSLSocketType:
+		return "SSL"
+	case providers.StartTLSSocketType:
+		return "STARTTLS"
+	case providers.PlainSocketType:
+		return "PLAIN"
+	default:
+		return ""
+	}
+}
+
 func createIncomingServerConfigV1_1(serverType string, username string, config *providers.IncomingServerConfig) IncomingServer {
 	return IncomingServer{
 		Type:           serverType,
 		Username:       username,
 		Hostname:       config.Hostname,
 		Port:           config.Port,
-		SocketType:     config.SocketType.String(),
+		SocketType:     getSocketType(config.SocketType),
 		Authentication: config.Authentication,
 	}
 }
@@ -113,7 +126,7 @@ func createOutgoingServerConfigV1_1(username string, config *providers.OutgoingS
 		Username:                 username,
 		Hostname:                 config.Hostname,
 		Port:                     config.Port,
-		SocketType:               config.SocketType.String(),
+		SocketType:               getSocketType(config.SocketType),
 		Authentication:           config.Authentication,
 		UseGlobalPreferredServer: config.UseGlobalPreferredServer,
 	}

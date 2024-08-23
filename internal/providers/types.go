@@ -23,7 +23,7 @@ func (st SocketType) String() string {
 	case StartTLSSocketType:
 		return "STARTTLS"
 	default:
-		return fmt.Sprintf("Unknown SocketType(%d)", int(st))
+		return ""
 	}
 }
 

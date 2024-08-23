@@ -18,8 +18,8 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Get("/mail/config-v1.1.xml", handlers.AutoconfigHandler)
 	r.Get("/email.mobileconfig", handlers.MobileConfigHandler)
-	// r.Post("/autodiscover/autodiscover.xml", autodiscoverHandler)
-	// r.Post("/Autodiscover/Autodiscover.xml", autodiscoverHandler)
+	r.Post("/autodiscover/autodiscover.xml", handlers.AutodiscoverHandler)
+	r.Post("/Autodiscover/Autodiscover.xml", handlers.AutodiscoverHandler)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

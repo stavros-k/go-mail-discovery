@@ -1,10 +1,14 @@
 words:
   - autoconfig
   - autodiscover
+  - cleartext
   - emailaddress
   - Hostinger
   - Imap
+  - imappro
   - mobileconfig
+  - poppro
   - publicsuffix
+  - smtppro
   - starttls
   - tmpl

@@ -2,7 +2,12 @@ package providers
 
 import (
 	"fmt"
+	"io"
+	"log"
+	"os"
 	"sync"
+
+	"github.com/goccy/go-yaml"
 )
 
 var (
@@ -12,9 +17,22 @@ var (
 
 func init() {
 	providers = make(map[string]Provider)
-	// Initialize static providers
-	addProvider(zohoConfig())
-	// Add more static providers here as needed
+	configPath := os.Getenv("MAIL_PROVIDER_CONFIG_PATH")
+	if configPath == "" {
+		log.Printf("Env MAIL_PROVIDER_CONFIG_PATH is not set, using default providers")
+		addProvider(zohoConfig())
+	} else {
+		if err := LoadFromYaml(configPath); err != nil {
+			log.Printf("error loading providers from config: %v", err)
+		}
+	}
+
+	for _, provider := range providers {
+		if err := provider.Validate(); err != nil {
+			log.Fatalf("provider %s validation failed: %v", provider.ID, err)
+		}
+	}
+
 }
 
 func addProvider(provider Provider) {
@@ -64,4 +82,26 @@ func GetProviderInfo(id string) (string, error) {
 		return "", fmt.Errorf("provider not found: %s", id)
 	}
 	return provider.String(), nil
+}
+
+func LoadFromYaml(configPath string) error {
+	file, err := os.Open(configPath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+
+	var providers Providers
+	err = yaml.Unmarshal(data, &providers)
+	if err != nil {
+		return err
+	}
+	for _, provider := range providers.Providers {
+		addProvider(provider)
+	}
+	return nil
 }

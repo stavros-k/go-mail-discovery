@@ -1,0 +1,18 @@
+providers:
+  - id: zoho.eu
+    imap_server:
+      hostname: imappro.zoho.eu
+      port: 993
+      socket_type: SSL
+      authentication: password-cleartext
+    pop3_server:
+      hostname: poppro.zoho.eu
+      port: 995
+      socket_type: SSL
+      authentication: password-cleartext
+    smtp_server:
+      hostname: smtppro.zoho.eu
+      port: 587
+      socket_type: STARTTLS
+      authentication: password-cleartext
+      use_global_preferred_server: false

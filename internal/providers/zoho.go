@@ -7,25 +7,20 @@ func zohoConfig() Provider {
 			Hostname:       "imappro.zoho.eu",
 			Port:           993,
 			SocketType:     SSLSocketType,
-			Authentication: "password-cleartext",
+			Authentication: CleartextAuthenticationType,
 		},
 		Pop3Server: &IncomingServerConfig{
 			Hostname:       "poppro.zoho.eu",
 			Port:           995,
 			SocketType:     SSLSocketType,
-			Authentication: "password-cleartext",
+			Authentication: CleartextAuthenticationType,
 		},
 		SmtpServer: &OutgoingServerConfig{
 			Hostname:                 "smtppro.zoho.eu",
 			Port:                     587,
 			SocketType:               StartTLSSocketType,
-			Authentication:           "password-cleartext",
+			Authentication:           CleartextAuthenticationType,
 			UseGlobalPreferredServer: false,
 		},
 	}
 }
-
-// For future dynamic configuration:
-// func LoadProvidersFromConfig(configPath string) error {
-//     // Implementation to load providers from YAML/JSON
-// }

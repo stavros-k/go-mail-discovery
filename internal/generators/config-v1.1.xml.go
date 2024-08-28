@@ -116,7 +116,7 @@ func createIncomingServerConfigV1_1(serverType string, username string, config *
 		Hostname:       config.Hostname,
 		Port:           config.Port,
 		SocketType:     getSocketType(config.SocketType),
-		Authentication: config.Authentication,
+		Authentication: config.Authentication.String(),
 	}
 }
 
@@ -127,7 +127,7 @@ func createOutgoingServerConfigV1_1(username string, config *providers.OutgoingS
 		Hostname:                 config.Hostname,
 		Port:                     config.Port,
 		SocketType:               getSocketType(config.SocketType),
-		Authentication:           config.Authentication,
+		Authentication:           config.Authentication.String(),
 		UseGlobalPreferredServer: config.UseGlobalPreferredServer,
 	}
 }

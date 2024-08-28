@@ -152,7 +152,7 @@ func createIncomingServerAutoDiscovery(serverType string, username string, confi
 		SecurePasswordAuth: NewAutoDiscoverBoolPtr(false),
 		Encryption:         getEncryption(config.SocketType),
 		SSL:                NewAutoDiscoverBoolPtr(config.SocketType == providers.SSLSocketType),
-		AuthRequired:       NewAutoDiscoverBoolPtr(config.Authentication != "none"),
+		AuthRequired:       NewAutoDiscoverBoolPtr(config.Authentication != providers.NoneAuthenticationType),
 		DomainRequired:     NewAutoDiscoverBoolPtr(false),
 		LoginName:          username,
 	}
@@ -166,7 +166,7 @@ func createOutgoingServerAutoDiscovery(username string, config *providers.Outgoi
 		SecurePasswordAuth: NewAutoDiscoverBoolPtr(false),
 		Encryption:         getEncryption(config.SocketType),
 		SSL:                NewAutoDiscoverBoolPtr(config.SocketType == providers.SSLSocketType),
-		AuthRequired:       NewAutoDiscoverBoolPtr(config.Authentication != "none"),
+		AuthRequired:       NewAutoDiscoverBoolPtr(config.Authentication != providers.NoneAuthenticationType),
 		UsePOPAuth:         NewAutoDiscoverBoolPtr(false),
 		SMTPLast:           NewAutoDiscoverBoolPtr(false),
 		DomainRequired:     NewAutoDiscoverBoolPtr(false),

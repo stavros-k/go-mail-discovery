@@ -36,3 +36,34 @@ Body:
 ```
 
 Method: `POST`
+
+---
+
+It uses MX Lookup to determine the provider ID.
+It goes over the MX records, extracts the **host** and this becomes the ID of the provider.
+
+For example: `mx.zoho.eu.` becomes `zoho.eu`.
+So a provider would have to be defined in the config file like so:
+
+```yaml
+# In order to use the config file you need to set the env variable MAIL_PROVIDER_CONFIG_PATH
+# otherwise a default provider (zoho.eu) will be used
+providers:
+  - id: zoho.eu # Notice the id here
+    imap_server:
+      hostname: imappro.zoho.eu
+      port: 993
+      socket_type: SSL
+      authentication: password-cleartext
+    pop3_server:
+      hostname: poppro.zoho.eu
+      port: 995
+      socket_type: SSL
+      authentication: password-cleartext
+    smtp_server:
+      hostname: smtppro.zoho.eu
+      port: 587
+      socket_type: STARTTLS
+      authentication: password-cleartext
+      use_global_preferred_server: false
+```

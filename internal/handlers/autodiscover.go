@@ -18,7 +18,7 @@ type AutoDiscoverPayload struct {
 }
 type Request struct {
 	XMLName      xml.Name `xml:"Request"`
-	EMailAddress string   `xml:"EMailAddress"`
+	EmailAddress string   `xml:"EMailAddress"`
 }
 
 func AutodiscoverHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func AutodiscoverHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusBadRequest, fmt.Errorf("error unmarshalling request body: %w", err))
 		return
 	}
-	emailAddress := payload.Request.EMailAddress
+	emailAddress := payload.Request.EmailAddress
 	if emailAddress == "" || !strings.Contains(emailAddress, "@") {
 		handleError(w, http.StatusBadRequest, fmt.Errorf("invalid email address: %s", emailAddress))
 		return

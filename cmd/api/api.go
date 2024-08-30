@@ -16,6 +16,7 @@ func main() {
 	fmt.Println(strings.Join(providers.ListProvidersWithInfo(), "\n"))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Get("/health", handlers.HealthHandler)
 	r.Get("/mail/config-v1.1.xml", handlers.AutoconfigHandler)
 	r.Get("/email.mobileconfig", handlers.MobileConfigHandler)
 	r.Post("/autodiscover/autodiscover.xml", handlers.AutodiscoverHandler)

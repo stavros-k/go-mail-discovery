@@ -67,3 +67,12 @@ providers:
       authentication: password-cleartext
       use_global_preferred_server: false
 ```
+
+---
+
+## Credits
+
+Big inspirations and help from the following projects:
+
+- [email-autoconf](https://gitlab.com/onlime/email-autoconf)
+- [automx2](https://github.com/rseichter/automx2)

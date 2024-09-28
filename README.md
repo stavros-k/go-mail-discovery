@@ -76,3 +76,7 @@ Big inspirations and help from the following projects:
 
 - [email-autoconf](https://gitlab.com/onlime/email-autoconf)
 - [automx2](https://github.com/rseichter/automx2)
+
+## Resources
+
+- [Apple Configuration Profile Reference](https://developer.apple.com/business/documentation/Configuration-Profile-Reference.pdf)

@@ -80,3 +80,5 @@ Big inspirations and help from the following projects:
 ## Resources
 
 - [Apple Configuration Profile Reference](https://developer.apple.com/business/documentation/Configuration-Profile-Reference.pdf)
+- [email-autoconf article](https://pipo.blog/articles/20210826-email-autoconf)
+- [Microsoft autodiscover implementation](https://support.microsoft.com/en-us/topic/outlook-2016-implementation-of-autodiscover-0d7b2709-958a-7249-1c87-434d257b9087)

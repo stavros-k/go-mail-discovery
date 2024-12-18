@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0
-	github.com/goccy/go-yaml v1.13.6
+	github.com/goccy/go-yaml v1.15.11
 	github.com/google/uuid v1.6.0
 	github.com/spf13/cobra v1.8.1
 	golang.org/x/net v0.30.0

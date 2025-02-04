@@ -3,7 +3,7 @@ module github.com/stavros-k/go-mail-discovery
 go 1.23.4
 
 require (
-	github.com/go-chi/chi/v5 v5.2.0
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/goccy/go-yaml v1.15.11
 	github.com/google/uuid v1.6.0
 	github.com/spf13/cobra v1.8.1

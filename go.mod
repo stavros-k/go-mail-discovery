@@ -7,7 +7,7 @@ require (
 	github.com/goccy/go-yaml v1.15.11
 	github.com/google/uuid v1.6.0
 	github.com/spf13/cobra v1.8.1
-	golang.org/x/net v0.33.0
+	golang.org/x/net v0.38.0
 )
 
 require (

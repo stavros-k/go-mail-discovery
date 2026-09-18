@@ -9,7 +9,7 @@ on:
 jobs:
   hadolint:
     name: Run hadolint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -28,7 +28,7 @@ jobs:
       packages: write
       contents: read
     name: Build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - hadolint
     steps:

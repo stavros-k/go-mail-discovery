@@ -2,9 +2,9 @@ package providers
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/goccy/go-yaml"
@@ -20,7 +20,9 @@ func init() {
 	configPath := os.Getenv("MAIL_PROVIDER_CONFIG_PATH")
 	if configPath == "" {
 		log.Printf("Env MAIL_PROVIDER_CONFIG_PATH is not set, using default providers")
-		addProvider(zohoConfig())
+		if err := addProvider(zohoConfig()); err != nil {
+			log.Fatalf("error adding default provider: %v", err)
+		}
 	} else {
 		if err := LoadFromYaml(configPath); err != nil {
 			log.Fatalf("error loading providers from config: %v", err)
@@ -35,19 +37,27 @@ func init() {
 
 }
 
-func addProvider(provider Provider) {
+// normalizeID lowercases the ID, as it is matched against
+// the (lowercased) domain of the MX records.
+func normalizeID(id string) string {
+	return strings.ToLower(id)
+}
+
+func addProvider(provider Provider) error {
 	providersMutex.Lock()
 	defer providersMutex.Unlock()
+	provider.ID = normalizeID(provider.ID)
 	if _, ok := providers[provider.ID]; ok {
-		panic(fmt.Sprintf("provider already exists: %s", provider.ID))
+		return fmt.Errorf("provider already exists: %s", provider.ID)
 	}
 	providers[provider.ID] = provider
+	return nil
 }
 
 func GetProvider(id string) (Provider, error) {
 	providersMutex.RLock()
 	defer providersMutex.RUnlock()
-	provider, ok := providers[id]
+	provider, ok := providers[normalizeID(id)]
 	if !ok {
 		return Provider{}, fmt.Errorf("provider not found: %s", id)
 	}
@@ -77,7 +87,7 @@ func ListProvidersWithInfo() []string {
 func GetProviderInfo(id string) (string, error) {
 	providersMutex.RLock()
 	defer providersMutex.RUnlock()
-	provider, ok := providers[id]
+	provider, ok := providers[normalizeID(id)]
 	if !ok {
 		return "", fmt.Errorf("provider not found: %s", id)
 	}
@@ -85,12 +95,7 @@ func GetProviderInfo(id string) (string, error) {
 }
 
 func LoadFromYaml(configPath string) error {
-	file, err := os.Open(configPath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	data, err := io.ReadAll(file)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return err
 	}
@@ -101,7 +106,9 @@ func LoadFromYaml(configPath string) error {
 		return err
 	}
 	for _, provider := range providers.Providers {
-		addProvider(provider)
+		if err := addProvider(provider); err != nil {
+			return err
+		}
 	}
 	return nil
 }

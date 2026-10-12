@@ -28,7 +28,7 @@ URL: `https://autodiscover.<domain>.<tld>/autodiscover/autodiscover.xml` or `htt
 Body:
 
 ```xml
-<Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
+<Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/requestschema/2006">
   <Request>
     <EMailAddress>user@domain.com</EMailAddress>
   </Request>

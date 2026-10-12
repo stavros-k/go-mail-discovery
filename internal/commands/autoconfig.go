@@ -39,6 +39,6 @@ var autoconfigCmd = &cobra.Command{
 
 func init() {
 	autoconfigCmd.Flags().StringP("email", "e", "", "Email address")
-	autoconfigCmd.MarkFlagRequired("email")
+	cobra.CheckErr(autoconfigCmd.MarkFlagRequired("email"))
 	rootCmd.AddCommand(autoconfigCmd)
 }

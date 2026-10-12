@@ -39,6 +39,6 @@ var mobileconfigCmd = &cobra.Command{
 
 func init() {
 	mobileconfigCmd.Flags().StringP("email", "e", "", "Email address")
-	mobileconfigCmd.MarkFlagRequired("email")
+	cobra.CheckErr(mobileconfigCmd.MarkFlagRequired("email"))
 	rootCmd.AddCommand(mobileconfigCmd)
 }

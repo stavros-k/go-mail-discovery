@@ -114,6 +114,13 @@ func sanitizeIdentifier(s string) string {
 	}, strings.ToLower(s))
 }
 
+func getMobileConfigAuth(at providers.AuthenticationType) string {
+	if at == providers.NoneAuthenticationType {
+		return "EmailAuthNone"
+	}
+	return "EmailAuthPassword"
+}
+
 type MobileConfigParams struct {
 	Domain      string
 	DisplayName string
@@ -144,13 +151,13 @@ func NewMobileConfig(p MobileConfigParams) (*MobileConfig, error) {
 		NewStringEntry("EmailAccountName", p.DisplayName),
 		NewStringEntry("EmailAccountType", "EmailTypeIMAP"),
 		NewStringEntry("EmailAddress", p.Username),
-		NewStringEntry("IncomingMailServerAuthentication", "EmailAuthPassword"),
+		NewStringEntry("IncomingMailServerAuthentication", getMobileConfigAuth(p.Provider.ImapServer.Authentication)),
 		NewStringEntry("IncomingMailServerHostName", p.Provider.ImapServer.Hostname),
 		NewIntegerValue("IncomingMailServerPortNumber", p.Provider.ImapServer.Port),
 		NewBooleanEntry("IncomingMailServerUseSSL", isSocketSSLorStartTLS(p.Provider.ImapServer.SocketType)),
 		NewStringEntry("IncomingMailServerUsername", p.Username),
 		NewStringEntry("IncomingPassword", ""),
-		NewStringEntry("OutgoingMailServerAuthentication", "EmailAuthPassword"),
+		NewStringEntry("OutgoingMailServerAuthentication", getMobileConfigAuth(p.Provider.SmtpServer.Authentication)),
 		NewStringEntry("OutgoingMailServerHostName", p.Provider.SmtpServer.Hostname),
 		NewIntegerValue("OutgoingMailServerPortNumber", p.Provider.SmtpServer.Port),
 		NewBooleanEntry("OutgoingMailServerUseSSL", isSocketSSLorStartTLS(p.Provider.SmtpServer.SocketType)),

@@ -71,7 +71,7 @@ func (b AutoDiscoverBool) MarshalXML(e *xml.Encoder, start xml.StartElement) err
 func (a AutoDiscoverConfig) Bytes() ([]byte, error) {
 	data, err := xml.MarshalIndent(a, "", "  ")
 	if err != nil {
-		return nil, fmt.Errorf("error marshaling plist: %w", err)
+		return nil, fmt.Errorf("error marshaling config: %w", err)
 	}
 	data = append([]byte(xml.Header), data...)
 	return data, nil

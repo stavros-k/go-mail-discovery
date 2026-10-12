@@ -104,6 +104,12 @@ func (p *Provider) Validate() error {
 	if p.ID == "" {
 		return fmt.Errorf("provider ID is required")
 	}
+	if p.ImapServer == nil && p.Pop3Server == nil {
+		return fmt.Errorf("provider %s needs at least one of imap_server or pop3_server", p.ID)
+	}
+	if p.SmtpServer == nil {
+		return fmt.Errorf("provider %s needs an smtp_server", p.ID)
+	}
 	if p.ImapServer != nil {
 		if err := p.ImapServer.Validate(); err != nil {
 			return fmt.Errorf("imap server validation failed for provider %s: %v", p.ID, err)
@@ -152,6 +158,9 @@ func (i *IncomingServerConfig) Validate() error {
 	if i.Port == 0 {
 		return fmt.Errorf("IncomingServerConfig: port is required")
 	}
+	if i.Port < 1 || i.Port > 65535 {
+		return fmt.Errorf("IncomingServerConfig: port [%d] is invalid", i.Port)
+	}
 	if !i.SocketType.IsValid() {
 		return fmt.Errorf("IncomingServerConfig: socket_type [%s] is invalid", i.SocketType)
 	}
@@ -175,6 +184,9 @@ func (o *OutgoingServerConfig) Validate() error {
 	}
 	if o.Port == 0 {
 		return fmt.Errorf("OutgoingServerConfig: port is required")
+	}
+	if o.Port < 1 || o.Port > 65535 {
+		return fmt.Errorf("OutgoingServerConfig: port [%d] is invalid", o.Port)
 	}
 	if !o.SocketType.IsValid() {
 		return fmt.Errorf("OutgoingServerConfig: socket_type [%s] is invalid", o.SocketType)

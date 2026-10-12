@@ -39,6 +39,6 @@ var autodiscoverCmd = &cobra.Command{
 
 func init() {
 	autodiscoverCmd.Flags().StringP("email", "e", "", "Email address")
-	autodiscoverCmd.MarkFlagRequired("email")
+	cobra.CheckErr(autodiscoverCmd.MarkFlagRequired("email"))
 	rootCmd.AddCommand(autodiscoverCmd)
 }

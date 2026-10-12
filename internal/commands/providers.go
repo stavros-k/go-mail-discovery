@@ -36,7 +36,7 @@ var providerCmd = &cobra.Command{
 
 func init() {
 	providerCmd.Flags().StringP("id", "i", "", "Provider ID")
-	providerCmd.MarkFlagRequired("id")
+	cobra.CheckErr(providerCmd.MarkFlagRequired("id"))
 
 	rootCmd.AddCommand(providerCmd)
 	rootCmd.AddCommand(providersCmd)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/mail"
 	"strings"
 	"sync"
 	"time"
@@ -22,7 +23,9 @@ func GetDomainFromEmailAddress(emailAddress string) (string, error) {
 	if emailAddress == "" {
 		return "", nil
 	}
-	if !strings.Contains(emailAddress, "@") {
+	// Only a bare address is accepted, not the "Name <address>" form
+	address, err := mail.ParseAddress(emailAddress)
+	if err != nil || address.Address != emailAddress {
 		return "", ErrInvalidEmail
 	}
 
@@ -47,10 +50,19 @@ func init() {
 	}
 }
 
-const cacheTTL = time.Minute * 5
+const (
+	cacheTTL = time.Minute * 5
+	// Domains without a known provider are cached for a shorter time,
+	// so that repeated requests for them do not each cause a DNS lookup.
+	negativeCacheTTL = time.Minute
+	// Upper bound of cached domains, new entries are not cached once it is reached.
+	maxCacheEntries = 10000
+)
 
 var providerCacheMap ProviderIDCache
 
+// CachedProviderID holds the provider of a domain,
+// an empty ProviderID means that the domain has no known provider.
 type CachedProviderID struct {
 	ProviderID string
 	Expires    time.Time
@@ -61,7 +73,7 @@ type ProviderIDCache struct {
 	mutex sync.RWMutex
 }
 
-func (p *ProviderIDCache) Set(domain string, providerID string) {
+func (p *ProviderIDCache) Set(domain string, providerID string, ttl time.Duration) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	now := time.Now().UTC()
@@ -70,9 +82,12 @@ func (p *ProviderIDCache) Set(domain string, providerID string) {
 			delete(p.cache, key)
 		}
 	}
+	if _, ok := p.cache[domain]; !ok && len(p.cache) >= maxCacheEntries {
+		return
+	}
 	p.cache[domain] = CachedProviderID{
 		ProviderID: providerID,
-		Expires:    now.Add(cacheTTL),
+		Expires:    now.Add(ttl),
 	}
 }
 
@@ -91,6 +106,9 @@ func GetProviderFromMX(domain string, cache bool) (providers.Provider, error) {
 	if cache {
 		providerID, ok := providerCacheMap.Get(domain)
 		if ok {
+			if providerID == "" {
+				return providers.Provider{}, ErrNoProvider
+			}
 			log.Printf("Using cached provider %s for domain %s", providerID, domain)
 			return providers.GetProvider(providerID)
 		}
@@ -98,6 +116,10 @@ func GetProviderFromMX(domain string, cache bool) (providers.Provider, error) {
 
 	mxRecords, err := net.LookupMX(domain)
 	if err != nil {
+		// Only cache definitive answers, not temporary failures like timeouts
+		if dnsErr, ok := errors.AsType[*net.DNSError](err); ok && dnsErr.IsNotFound {
+			providerCacheMap.Set(domain, "", negativeCacheTTL)
+		}
 		return providers.Provider{}, fmt.Errorf("error looking up MX records: %w", err)
 	}
 
@@ -121,9 +143,10 @@ func GetProviderFromMX(domain string, cache bool) (providers.Provider, error) {
 		}
 
 		log.Printf("Updating cache provider %s for domain %s", provider.ID, domain)
-		providerCacheMap.Set(domain, provider.ID)
+		providerCacheMap.Set(domain, provider.ID, cacheTTL)
 		return provider, nil
 	}
 
+	providerCacheMap.Set(domain, "", negativeCacheTTL)
 	return providers.Provider{}, ErrNoProvider
 }

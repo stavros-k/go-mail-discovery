@@ -1,13 +1,13 @@
 module github.com/stavros-k/go-mail-discovery
 
-go 1.25.5
+go 1.27.2
 
 require (
-	github.com/go-chi/chi/v5 v5.2.4
+	github.com/go-chi/chi/v5 v5.4.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/google/uuid v1.6.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/net v0.49.0
+	golang.org/x/net v0.61.0
 )
 
 require (

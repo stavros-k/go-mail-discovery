@@ -1,4 +1,4 @@
-FROM golang:1.25.5 AS builder
+FROM golang:1.27.2 AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 go build -o /app/api ./cmd/api
 RUN CGO_ENABLED=0 go build -o /app/cli ./cmd/cli
 RUN CGO_ENABLED=0 go build -o /app/health ./cmd/health
 
-FROM gcr.io/distroless/static-debian12
+FROM gcr.io/distroless/static-debian13
 
 COPY --from=builder /app/api /app/api
 COPY --from=builder /app/cli /app/cli

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/stavros-k/go-mail-discovery/internal/providers"
@@ -101,6 +102,18 @@ func isSocketSSLorStartTLS(st providers.SocketType) bool {
 	return st == providers.SSLSocketType || st == providers.StartTLSSocketType
 }
 
+// sanitizeIdentifier makes s usable as part of a payload identifier
+func sanitizeIdentifier(s string) string {
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '.', r == '-':
+			return r
+		default:
+			return '-'
+		}
+	}, strings.ToLower(s))
+}
+
 type MobileConfigParams struct {
 	Domain      string
 	DisplayName string
@@ -120,7 +133,10 @@ func NewMobileConfig(p MobileConfigParams) (*MobileConfig, error) {
 	if p.Provider.SmtpServer == nil {
 		return nil, fmt.Errorf("no SMTP server configured for provider %s", p.Provider.ID)
 	}
-	payloadIdentifier := fmt.Sprintf("%s.mobileconfig", p.Domain)
+	// The profile identifier decides whether a profile replaces an installed one,
+	// so it has to be unique per account, not per domain.
+	profileIdentifier := fmt.Sprintf("%s.mobileconfig.%s", p.Domain, sanitizeIdentifier(p.Username))
+	payloadIdentifier := profileIdentifier + ".mail"
 	payloadDescription := fmt.Sprintf("Email account configuration for [%s]", p.DisplayName)
 
 	arrayKeyValuePairs := [][]DictItem{
@@ -165,7 +181,7 @@ func NewMobileConfig(p MobileConfigParams) (*MobileConfig, error) {
 	payloadContentKeyValuePairs := [][]DictItem{
 		NewStringEntry("PayloadDescription", payloadDescription),
 		NewStringEntry("PayloadDisplayName", p.DisplayName),
-		NewStringEntry("PayloadIdentifier", payloadIdentifier),
+		NewStringEntry("PayloadIdentifier", profileIdentifier),
 		NewStringEntry("PayloadOrganization", p.Domain),
 		NewBooleanEntry("PayloadRemovalDisallowed", false),
 		NewStringEntry("PayloadType", "Configuration"),

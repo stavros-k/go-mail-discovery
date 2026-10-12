@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -15,6 +16,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resp.Status)
 	defer resp.Body.Close()
+	fmt.Println(resp.Status)
+	if resp.StatusCode != http.StatusOK {
+		os.Exit(1)
+	}
 }

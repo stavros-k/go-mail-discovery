@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +12,8 @@ import (
 	"github.com/stavros-k/go-mail-discovery/internal/generators"
 	"github.com/stavros-k/go-mail-discovery/internal/utils"
 )
+
+const maxAutodiscoverBodySize = 64 * 1024
 
 type AutoDiscoverPayload struct {
 	XMLName xml.Name `xml:"Autodiscover"`
@@ -22,9 +25,13 @@ type Request struct {
 }
 
 func AutodiscoverHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxAutodiscoverBodySize))
 	if err != nil {
-		handleError(w, http.StatusBadRequest, fmt.Errorf("error reading request body: %w", err))
+		status := http.StatusBadRequest
+		if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
+			status = http.StatusRequestEntityTooLarge
+		}
+		handleError(w, status, fmt.Errorf("error reading request body: %w", err))
 		return
 	}
 	var payload AutoDiscoverPayload

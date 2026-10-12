@@ -23,7 +23,7 @@ func init() {
 		addProvider(zohoConfig())
 	} else {
 		if err := LoadFromYaml(configPath); err != nil {
-			log.Printf("error loading providers from config: %v", err)
+			log.Fatalf("error loading providers from config: %v", err)
 		}
 	}
 

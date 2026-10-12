@@ -26,13 +26,19 @@ func GetDomainFromEmailAddress(emailAddress string) (string, error) {
 		return "", ErrInvalidEmail
 	}
 
-	domain := strings.Split(emailAddress, "@")[1]
+	domain := NormalizeDomain(emailAddress[strings.LastIndex(emailAddress, "@")+1:])
 
 	if domain == "" {
 		return "", ErrInvalidEmail
 	}
 
 	return domain, nil
+}
+
+// NormalizeDomain lowercases the domain and strips the trailing dot,
+// so that the same domain always maps to the same provider and cache entry.
+func NormalizeDomain(domain string) string {
+	return strings.ToLower(strings.TrimRight(domain, "."))
 }
 
 func init() {
@@ -58,9 +64,15 @@ type ProviderIDCache struct {
 func (p *ProviderIDCache) Set(domain string, providerID string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
+	now := time.Now().UTC()
+	for key, entry := range p.cache {
+		if entry.Expires.Before(now) {
+			delete(p.cache, key)
+		}
+	}
 	p.cache[domain] = CachedProviderID{
 		ProviderID: providerID,
-		Expires:    time.Now().UTC().Add(cacheTTL),
+		Expires:    now.Add(cacheTTL),
 	}
 }
 
@@ -75,6 +87,7 @@ func (p *ProviderIDCache) Get(domain string) (string, bool) {
 }
 
 func GetProviderFromMX(domain string, cache bool) (providers.Provider, error) {
+	domain = NormalizeDomain(domain)
 	if cache {
 		providerID, ok := providerCacheMap.Get(domain)
 		if ok {
@@ -89,7 +102,7 @@ func GetProviderFromMX(domain string, cache bool) (providers.Provider, error) {
 	}
 
 	for _, mxRecord := range mxRecords {
-		host := strings.TrimRight(mxRecord.Host, ".")
+		host := NormalizeDomain(mxRecord.Host)
 		if strings.Contains(host, ":") {
 			host, _, err = net.SplitHostPort(host)
 			if err != nil {

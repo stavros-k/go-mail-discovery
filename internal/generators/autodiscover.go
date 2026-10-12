@@ -160,7 +160,7 @@ func createIncomingServerAutoDiscovery(serverType string, username string, confi
 
 func createOutgoingServerAutoDiscovery(username string, config *providers.OutgoingServerConfig) Protocol {
 	return Protocol{
-		Type:               "smtp",
+		Type:               "SMTP",
 		Server:             config.Hostname,
 		Port:               config.Port,
 		SecurePasswordAuth: NewAutoDiscoverBoolPtr(false),

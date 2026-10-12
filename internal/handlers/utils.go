@@ -38,7 +38,7 @@ func getEmailFromQuery(r *http.Request, queryKey string, usePlaceholder bool) (s
 func getDomainFromRequest(r *http.Request) (string, error) {
 	host, _, err := net.SplitHostPort(r.Host)
 	if err != nil {
-		if strings.Contains(host, ":") {
+		if strings.Contains(r.Host, ":") {
 			return "", fmt.Errorf("error splitting host and port: %w", err)
 		}
 		// If SplitHostPort fails, it might be because there's no port
@@ -46,7 +46,7 @@ func getDomainFromRequest(r *http.Request) (string, error) {
 		host = r.Host
 	}
 
-	domain, err := publicsuffix.EffectiveTLDPlusOne(host)
+	domain, err := publicsuffix.EffectiveTLDPlusOne(utils.NormalizeDomain(host))
 	if err != nil {
 		return "", fmt.Errorf("error getting effective TLD: %w", err)
 	}

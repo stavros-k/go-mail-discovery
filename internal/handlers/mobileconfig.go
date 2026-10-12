@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"mime"
 	"net/http"
 
 	"github.com/stavros-k/go-mail-discovery/internal/generators"
@@ -46,8 +47,12 @@ func MobileConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/x-apple-aspen-config")
-	// return a downloadable file with name "autoconfig.mobileconfig"
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.mobileconfig", emailAddress))
+	// return a downloadable file with name "<email>.mobileconfig"
+	disposition := mime.FormatMediaType("attachment", map[string]string{"filename": emailAddress + ".mobileconfig"})
+	if disposition == "" {
+		disposition = "attachment; filename=email.mobileconfig"
+	}
+	w.Header().Set("Content-Disposition", disposition)
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(data); err != nil {
 		log.Printf("error writing response: %v", err)

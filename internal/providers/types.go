@@ -7,8 +7,10 @@ import (
 
 type AuthenticationType int
 
+// The zero value is intentionally not a valid type, so that a missing
+// field in the config is caught by validation instead of defaulting.
 const (
-	NoneAuthenticationType AuthenticationType = iota
+	NoneAuthenticationType AuthenticationType = iota + 1
 	CleartextAuthenticationType
 )
 
@@ -46,8 +48,10 @@ func (at *AuthenticationType) IsValid() bool {
 
 type SocketType int
 
+// The zero value is intentionally not a valid type, so that a missing
+// field in the config is caught by validation instead of defaulting.
 const (
-	PlainSocketType SocketType = iota
+	PlainSocketType SocketType = iota + 1
 	SSLSocketType
 	StartTLSSocketType
 )
@@ -120,15 +124,15 @@ func (p *Provider) Validate() error {
 
 func (p Provider) String() string {
 	s := strings.Builder{}
-	s.WriteString(fmt.Sprintf("Provider: %s\n", p.ID))
+	fmt.Fprintf(&s, "Provider: %s\n", p.ID)
 	if p.ImapServer != nil {
-		s.WriteString(fmt.Sprintf("Incoming Server: %s\n", p.ImapServer))
+		fmt.Fprintf(&s, "%s\n", p.ImapServer)
 	}
 	if p.Pop3Server != nil {
-		s.WriteString(fmt.Sprintf("Incoming Server: %s\n", p.Pop3Server))
+		fmt.Fprintf(&s, "%s\n", p.Pop3Server)
 	}
 	if p.SmtpServer != nil {
-		s.WriteString(fmt.Sprintf("Outgoing Server: %s\n", p.SmtpServer))
+		fmt.Fprintf(&s, "%s\n", p.SmtpServer)
 	}
 
 	return s.String()

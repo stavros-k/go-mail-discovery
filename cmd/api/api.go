@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,10 +22,18 @@ func main() {
 		r.Use(middleware.Logger)
 		r.Get("/mail/config-v1.1.xml", handlers.AutoconfigHandler)
 		r.Get("/email.mobileconfig", handlers.MobileConfigHandler)
-		r.Post("/autodiscover/autodiscover.xml", handlers.AutodiscoverHandler)
-		r.Post("/Autodiscover/Autodiscover.xml", handlers.AutodiscoverHandler)
+		// Clients use different casings for this path
+		r.Post("/{dir:(?i)autodiscover}/{file:(?i)autodiscover\\.xml}", handlers.AutodiscoverHandler)
 	})
 
 	fmt.Println("Starting server on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           r,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       2 * time.Minute,
+	}
+	log.Fatal(server.ListenAndServe())
 }

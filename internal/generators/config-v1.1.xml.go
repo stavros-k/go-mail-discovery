@@ -103,7 +103,7 @@ func getSocketType(s providers.SocketType) string {
 	case providers.StartTLSSocketType:
 		return "STARTTLS"
 	case providers.PlainSocketType:
-		return "PLAIN"
+		return "plain"
 	default:
 		return ""
 	}

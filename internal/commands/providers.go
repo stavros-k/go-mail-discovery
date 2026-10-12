@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/stavros-k/go-mail-discovery/internal/providers"
@@ -22,13 +23,11 @@ var providerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 		if id == "" {
-			fmt.Println("Error: provider ID is required")
-			return
+			log.Fatal("provider ID is required")
 		}
 		info, err := providers.GetProviderInfo(id)
 		if err != nil {
-			fmt.Println("Error:", err)
-			return
+			log.Fatal(err)
 		}
 		fmt.Println(info)
 
